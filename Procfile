@@ -1,1 +1,1 @@
-web: gunicorn pdf-scrapper.wsgi
+web: gunicorn scrapper.wsgi
