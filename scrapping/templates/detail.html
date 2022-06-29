@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ resolution.name }}</h1>
+    <p>{{ resolution.text }}</p>
+    <br>
+    <p>{{ resolution.result_text }}</p>
+    <h2>Výsledky</h2>
+    <table style="width:100%">
+      <tr>
+        <th>Ano</th>
+        <th>Ne</th>
+        <th>Zdržel se</th>
+      </tr>
+      <tr>
+        <td>{{ resolution.vote_yes }}</td>
+        <td>{{ resolution.vote_no }}</td>
+        <td>{{ resolution.vote_neutral }}</td>
+      </tr>
+    </table>
+
+    <h2>Schváleno:
+        {% if resolution.voting_result %}
+            ANO
+        {% else %}
+            NE
+        {% endif %}
+    </h2>
+
+</body>
+</html>

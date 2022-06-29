@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My test page</title>
+  </head>
+  <body>
+
+    {% if res_list %}
+        <ul>
+        {% for res in res_list %}
+            <li><a href="{% url 'scrapping:detail' res.id %}">{{ res.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No resolutions are available.</p>
+    {% endif %}
+
+  </body>
+</html>
