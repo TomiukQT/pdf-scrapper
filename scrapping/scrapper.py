@@ -13,7 +13,8 @@ from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
-from io import StringIO
+from io import StringIO,BytesIO
+
 from datetime import date
 
 from .models import Resolution
@@ -65,17 +66,15 @@ def request_pdf(current, url):
 # Pdf parsing and creating resolution
 def extract_text(pdf_response):
     output_string = StringIO()
-    path = "/tmp_extract.pdf"
-    open(path, 'wb').write(pdf_response.content)
-    with open(path, 'rb') as pdf:
-        parser = PDFParser(pdf)
-        doc = PDFDocument(parser)
-        rsrcmgr = PDFResourceManager()
-        device = TextConverter(rsrcmgr, output_string, laparams=LAParams())
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        for page in PDFPage.create_pages(doc):
-            interpreter.process_page(page)
-    #os.remove()
+    pdf = BytesIO(pdf_response.content)
+    parser = PDFParser(pdf)
+    doc = PDFDocument(parser)
+    rsrcmgr = PDFResourceManager()
+    device = TextConverter(rsrcmgr, output_string, laparams=LAParams())
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    for page in PDFPage.create_pages(doc):
+        interpreter.process_page(page)
+
     return output_string.getvalue()
 
 
