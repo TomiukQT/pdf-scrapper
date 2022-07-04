@@ -25,3 +25,23 @@ class Resolution(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ExtendedResolution(Resolution):
+    result = models.BooleanField()
+
+
+class Representative(models.Model):
+    name = models.CharField(max_length=20)
+    surname = models.CharField(max_length=20)
+    party = models.CharField(max_length=40)
+    #titles_front = models.CharField(max_length=20)
+    #titles_back = models.CharField(max_length=20)
+
+
+class Voting(models.Model):
+    option = models.CharField(max_length=20)
+    voted_by = models.ForeignKey(Representative, on_delete=models.CASCADE)
+    voted_on = models.ForeignKey(ExtendedResolution, on_delete=models.CASCADE)
+
+

@@ -13,11 +13,11 @@ from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
-from io import StringIO,BytesIO
+from io import StringIO, BytesIO
 
 from datetime import date
 
-from .models import Resolution
+from .models import Resolution,Representative, Voting
 import logging
 
 
@@ -58,9 +58,10 @@ def request_pdf(current, url):
             continue
         if link not in current:
                parse_new_format(extract_text(response))
+        else:
+            break
         if link == LAST:
             break
-        time.sleep(.1)
 
 
 # Pdf parsing and creating resolution
@@ -174,6 +175,30 @@ def refresh_data():
 
 
 LAST = 'https://www.novarole.cz/modules/file_storage/download.php?file=5bae53d5%7C706'
+
+
+def substitute(x):
+    if x == 'Bechiňský':
+        return 'Bartoň'
+
+
+def create_representatives():
+    res = [
+        ('Jitka', 'Pokorná', 'VOLBA PRO NOVOU ROLI...'), ('Hana ', 'Nesybová', 'VOLBA PRO NOVOU ROLI...'),
+        ('Jiří', 'Sýkora', 'ČSSD'),
+        ('Libor', 'Škarda', 'HN.ZA HARM.ROZVOJ OBCÍ'), ('Václav', 'Bartoň', 'VOLBA PRO NOVOU ROLI...'),
+        ('Jan', 'Kvapil', 'VOLBA PRO NOVOU ROLI...'),
+        ('Tomáš', 'Pavlíček', 'VOLBA PRO NOVOU ROLI...'), ('Petra', 'Krbcová', 'VOLBA PRO NOVOU ROLI...'),
+        ('Ladislav', 'Cinegr', 'SNK Nová Role - Mezirolí'),
+        ('Luboš', 'Pastor', 'ODS'), ('Milena', 'Tichá', 'ODS'), ('Karel', 'Švec', 'ODS'),
+        ('Miluše', 'Dušková', 'HN.ZA HARM.ROZVOJ OBCÍ'),
+        ('Ladislav', 'Slíž', 'ANO 2011'), ('David', 'Niedermertl', 'ANO 2011')
+    ]
+
+    for r in res:
+        representative = Representative.objects.create()
+        representative.name, representative.surname, representative.party = r
+        representative.save()
 
 
 def __main__():
