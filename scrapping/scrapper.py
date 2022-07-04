@@ -94,11 +94,15 @@ def parse_new_format(text, debug=False) -> []:
     date_pub = parse_new_date(lines[1])
 
     res_text = ''
+    category = 'None'
     mode = 'name'
 
     for line in text.splitlines():
         if debug:
             print(f">>>{line}")
+        if mode == "name" and re.search(r'^\d+/\d+ - ',line):
+            category = line.split('- ')[1]
+            continue
         if re.search('^RMě/.*', line) and mode == "name":
             resolution = Resolution.objects.create()
             resolution.name = line
@@ -112,6 +116,7 @@ def parse_new_format(text, debug=False) -> []:
             resolution.text = res_text
             resolution.result_text = line
             resolution.vote_yes, resolution.vote_no, resolution.vote_neutral = parse_new_result(line)
+            resolution.category = category
             resolution.date = date_pub
             resolution.save()
             res_text = ''
