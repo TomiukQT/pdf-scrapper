@@ -15,7 +15,6 @@ class Resolution(models.Model):
     category = models.CharField(max_length=50, default='Category')
     link = models.CharField(max_length=200, default='google.com')
 
-
     def voting_result(self):
         quorum = ceil((self.vote_yes + self.vote_no + self.vote_neutral)/2)
         return self.vote_yes >= quorum
@@ -28,7 +27,10 @@ class Resolution(models.Model):
 
 
 class ExtendedResolution(Resolution):
-    result = models.BooleanField()
+    result = models.BooleanField(default=False)
+    result_by_person = models.CharField(max_length=1000, default='')
+    attendance = models.CharField(max_length=1000, default='')
+    vote_missing = models.IntegerField(default=0)
 
 
 class Representative(models.Model):

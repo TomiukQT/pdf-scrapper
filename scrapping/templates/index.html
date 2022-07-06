@@ -48,16 +48,16 @@
             </div>
         </div>
 
-    <div class="row">
+        <div class="row">
         <div class="col-sm-1"></div>
         <div class="col-sm-10">
 
-            {% if res_list %}
-                {% for res in res_list %}
+            {% if ex_res_list %}
+                {% for eres in ex_res_list %}
                     <div class="card">
-                    <div class="card-header btn" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
-                      <a class="btn float-start">{{ res.get_header }}
-                          {% if res.voting_result %}
+                    <div class="card-header btn" data-bs-toggle="collapse" data-bs-target="#collapseEx{{ forloop.counter }}">
+                      <a class="btn float-start">{{ eres.get_header }}
+                          {% if eres.result %}
                           ✅
                           {% else %}
                           ❌
@@ -66,22 +66,37 @@
                       <button type="button" class="btn btn-light float-end" disabled>{{ res.category}}</button>
                     </div>
 
-                    <div id="collapse{{ forloop.counter }}"  class="collapse">
+                    <div id="collapseEx{{ forloop.counter }}"  class="collapse">
                       <div class="card-body">
                           <p>
-                              {{ res.text }}
+                              {{ eres.text }}
                           </p>
                           <button type="button" class="btn btn-secondary" disabled>
-                              Pro: {{ res.vote_yes }}  Proti: {{ res.vote_no }}
-                              {% if res.vote_neutral > 0 %}
-                              Zdržel se: {{ res.vote_neutral}}
+                              Pro: {{ eres.vote_yes }}  Proti: {{ eres.vote_no }}
+                              {% if eres.vote_neutral > 0 %}
+                              Zdržel se: {{ eres.vote_neutral}}
                               {% endif %}
                           </button>
-                           {% if res.voting_result %}
+                           {% if eres.result %}
                                 <button type="button" class="btn btn-success" disabled>Přijato</button>
                            {% else %}
                                 <button type="button" class="btn btn-danger" disabled>Nepřijato</button>
                            {% endif %}
+
+
+                          <div class="card-header btn" data-bs-toggle="collapse" data-bs-target="#collapseExRes{{ forloop.counter }}">
+                            Podrobné výsledky hlasování
+                          </div>
+                          <div id="collapseExRes{{ forloop.counter }}"  class="collapse">
+                            <div class="card-body">
+                                <p>{{ eres.result_by_person }} </p>
+
+
+                            </div>
+                          </div>
+
+
+
 
                         <button type="button" class="btn btn-info float-end" href="{{ res.source_link}}" disabled>Zdroj</button>
                         <button type="button" class="btn btn-light float-end" disabled>{{ res.date}}</button>
@@ -92,10 +107,60 @@
             {% endif %}
 
 
-                
+
             </div>
         <div class="col-sm-1"></div>
     </div>
+
+        <-- Rada--*>
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+
+                {% if res_list %}
+                    {% for res in res_list %}
+                        <div class="card">
+                        <div class="card-header btn" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
+                          <a class="btn float-start">{{ res.get_header }}
+                              {% if res.voting_result %}
+                              ✅
+                              {% else %}
+                              ❌
+                              {% endif %}
+                          </a>
+                          <button type="button" class="btn btn-light float-end" disabled>{{ res.category}}</button>
+                        </div>
+
+                        <div id="collapse{{ forloop.counter }}"  class="collapse">
+                          <div class="card-body">
+                              <p>
+                                  {{ res.text }}
+                              </p>
+                              <button type="button" class="btn btn-secondary" disabled>
+                                  Pro: {{ res.vote_yes }}  Proti: {{ res.vote_no }}
+                                  {% if res.vote_neutral > 0 %}
+                                  Zdržel se: {{ res.vote_neutral}}
+                                  {% endif %}
+                              </button>
+                               {% if res.voting_result %}
+                                    <button type="button" class="btn btn-success" disabled>Přijato</button>
+                               {% else %}
+                                    <button type="button" class="btn btn-danger" disabled>Nepřijato</button>
+                               {% endif %}
+
+                            <button type="button" class="btn btn-info float-end" href="{{ res.source_link}}" disabled>Zdroj</button>
+                            <button type="button" class="btn btn-light float-end" disabled>{{ res.date}}</button>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                {% endif %}
+
+
+
+                </div>
+            <div class="col-sm-1"></div>
+        </div>
 
     </body>
 </html>
