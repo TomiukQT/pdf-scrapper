@@ -14,10 +14,11 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
 from io import StringIO, BytesIO
+import sys
 
 from datetime import date
 
-from .models import Resolution,Representative, Voting
+from .models import Resolution, Representative, Voting
 import logging
 
 
@@ -211,4 +212,4 @@ def __main__():
 
 
 if __name__ == '__main__':
-    __main__()
+    globals()[sys.argv[1]]()
