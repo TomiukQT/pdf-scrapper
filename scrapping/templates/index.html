@@ -77,7 +77,7 @@
                               Zdržel se: {{ eres.vote_neutral}}
                               {% endif %}
                           </button>
-                           {% if eres.result %}
+                           {% if eres.result == True %}
                                 <button type="button" class="btn btn-success" disabled>Přijato</button>
                            {% else %}
                                 <button type="button" class="btn btn-danger" disabled>Nepřijato</button>

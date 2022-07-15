@@ -128,11 +128,14 @@ def parse_new_format(text, debug=False) -> []:
 
 
 def parse_zme_format(text, debug=False):
+    #import pdb;pdb.set_trace()
     lines = text.splitlines()
-    while '' in lines:
-        lines.remove('')
-    while ' ' in lines:
-        lines.remove(' ')
+
+    #while '' in lines:
+        #lines.remove('')
+    #while ' ' in lines:
+        #lines.remove(' ')
+    # import pdb;pdb.set_trace()
     date_pub = parse_new_date(lines[2])
     resolutions = []
     name = ""
@@ -174,18 +177,26 @@ def parse_zme_format(text, debug=False):
             name += f' -- {line}'
             mode = "text"
             continue
-        if mode == "text" and re.search(r'^Usnesení ', line):
+        if mode == "text" and re.search(r'^Usnesení ', line, re.IGNORECASE):
             mode = "result"
+            result = line
+            continue
         if mode == "result":
+            if line == '' or line == ' ':
+                mode = "final"
+            else:
+                result += line
+
+        if mode == "final":
             mode = "scan"
             ex_resolution = ExtendedResolution.objects.create()
             ex_resolution.name = name
             ex_resolution.text = restext
-            ex_resolution.result_text = line
+            ex_resolution.result_text = result
             ex_resolution.attendance = attendance_to_str(attendance)
 
             results, ex_resolution.vote_yes, ex_resolution.vote_no, ex_resolution.vote_neutral, \
-                ex_resolution.vote_missing, ex_resolution.result = parse_result_zme(line, attendance)
+                ex_resolution.vote_missing, ex_resolution.result = parse_result_zme(result, attendance)
             ex_resolution.result_by_person = result_to_str(results)
             ex_resolution.category = category
             ex_resolution.date = date_pub
@@ -193,7 +204,10 @@ def parse_zme_format(text, debug=False):
             restext = ""
             continue
         if mode == "text":
-            restext += line.strip()
+            if line == ' ' or line == '':
+                restext += '\n'
+            else:
+                restext += line.strip()
     return resolutions
 
 
@@ -220,29 +234,61 @@ def parse_result_zme(text, attendance):
         y = re.findall(r'\d+', text)[0]
         yes = int(y)
     # Nekdo se zdrzel nebo hlasoval proti:
-    if ',' in text:
-        tokens = re.findall(r'\d+ \w+', text, re.UNICODE)
-        votings = re.findall(r'\([^)]+\)', text, re.UNICODE)
+        if ',' in text:
+            tokens = re.findall(r'\d+ \w+', text, re.UNICODE)
+            votings = re.findall(r'\([^)]+\)', text, re.UNICODE)
 
-        i = 0
-        for s in tokens[1:]:
-            split = s.split(' ')
-            if split[1] == 'se':
-                neutral = int(split[0])
-                set_result(result, 'Zdrzel', votings[i])
-            elif split[1] == 'nepřítomen':
-                missing = int(split[0])
-                set_result(result, 'Nepritomen', votings[i])
-            elif split[1] == 'proti':
-                no = int[split[0]]
-                set_result(result, 'Proti', votings[i])
-            else:
-                continue
-            i += 1
+            i = 0
+            for s in tokens[1:]:
+                split = s.split(' ')
+                if split[1] == 'se':
+                    neutral = int(split[0])
+                    set_result(result, 'Zdrzel', votings[i])
+                elif split[1] == 'nepřítomen':
+                    missing = int(split[0])
+                    set_result(result, 'Nepritomen', votings[i])
+                elif split[1] == 'proti':
+                    no = int[split[0]]
+                    set_result(result, 'Proti', votings[i])
+                else:
+                    continue
+                i += 1
 
         for a in active:
             if result[a] == "?":
                 result[a] = "Pro"
+
+
+    if re.search(r'^Usnesení nepřijato', text, re.IGNORECASE):
+        res = re.findall(r'\(.+\)', text, re.UNICODE)[0]
+        tokens = res[1:-1].split(' ')
+        votings = re.findall(r'– [^–]+(;|\))', text, re.UNICODE)
+        result_bool = False
+
+        last = ''
+        i = 0
+        for s in tokens:
+            if s == 'se':
+                neutral = int(last)
+                set_result(result, 'Zdrzel', votings[i])
+            elif s == 'nepřítomen':
+                missing = int(last)
+                set_result(result, 'Nepritomen', votings[i])
+            elif s == 'proti':
+                no = int(last)
+                set_result(result, 'Proti', votings[i])
+            elif s == 'pro':
+                yes = int(last)
+                set_result(result, 'Pro', votings[i])
+            else:
+                last = s
+                continue
+            i += 1
+            last = s
+
+
+
+    #import pdb; pdb.set_trace()
     return result, yes, no, neutral, missing, result_bool
 
 
